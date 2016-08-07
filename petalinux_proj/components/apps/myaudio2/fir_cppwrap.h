@@ -1,0 +1,35 @@
+/*
+ * fir_cppwrap.h
+ *
+ *  Created on: Aug 7, 2016
+ *      Author: andrewandrepowell2
+ */
+
+#ifndef FIR_CPPWRAP_H_
+#define FIR_CPPWRAP_H_
+
+#include "fir.h"
+
+class fir_cppwrap
+{
+public:
+	fir_cppwrap() { }
+	void start( uint32_t phy_base_addr, void* param )
+	{
+		this->param = param;
+		fir_setup( &obj, phy_base_addr, fir_cppwrap::fir_mem_access_def, this );
+	}
+	int32_t perform( int32_t input_val ) { return fir_perform( &obj, input_val ); }
+private:
+	fir obj;
+	void* param;
+
+	virtual void mem_access( fir_dir dir, uint32_t phy_addr, uint32_t* data, void* param ) = 0;
+	static void fir_mem_access_def( fir_dir dir, uint32_t phy_addr, uint32_t* data, void* param )
+	{
+		fir_cppwrap* ptr = reinterpret_cast<fir_cppwrap*>( param );
+		ptr->mem_access( dir, phy_addr, data, ptr->param );
+	}
+};
+
+#endif /* FIR_CPPWRAP_H_ */

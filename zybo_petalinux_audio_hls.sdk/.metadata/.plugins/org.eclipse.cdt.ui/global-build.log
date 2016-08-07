@@ -1,0 +1,57 @@
+14:51:57 **** Clean-only build of configuration Debug for project myaudio ****
+make clean 
+rm -rf  ./src/main.d  ./src/audio.o ./src/audio_cppwrap.o ./src/fir.o ./src/fir_cppwrap.o ./src/linuxi2c.o ./src/linuxmisc.o ./src/linuxmmap.o ./src/main.o  ./src/audio.d ./src/fir.d  ./src/audio_cppwrap.d ./src/fir_cppwrap.d ./src/linuxi2c.d ./src/linuxmisc.d ./src/linuxmmap.d  myaudio.elf.size  myaudio.elf
+ 
+14:51:57 **** Build of configuration Debug for project myaudio ****
+make all 
+Building file: ../src/audio.c
+Invoking: ARM v7 Linux g++ compiler
+arm-linux-gnueabihf-g++ -Wall -Os -c -fmessage-length=0 -MT"src/audio.o" -fomit-frame-pointer -pipe -fno-common -fno-builtin -DEMBED -Dlinux -D__linux__ -Dunix -fPIC -MMD -MP -MF"src/audio.d" -MT"src/audio.o" -o "src/audio.o" "../src/audio.c"
+Finished building: ../src/audio.c
+ 
+Building file: ../src/audio_cppwrap.cpp
+Invoking: ARM v7 Linux g++ compiler
+arm-linux-gnueabihf-g++ -Wall -Os -c -fmessage-length=0 -MT"src/audio_cppwrap.o" -fomit-frame-pointer -pipe -fno-common -fno-builtin -DEMBED -Dlinux -D__linux__ -Dunix -fPIC -MMD -MP -MF"src/audio_cppwrap.d" -MT"src/audio_cppwrap.o" -o "src/audio_cppwrap.o" "../src/audio_cppwrap.cpp"
+Finished building: ../src/audio_cppwrap.cpp
+ 
+Building file: ../src/fir.c
+Invoking: ARM v7 Linux g++ compiler
+arm-linux-gnueabihf-g++ -Wall -Os -c -fmessage-length=0 -MT"src/fir.o" -fomit-frame-pointer -pipe -fno-common -fno-builtin -DEMBED -Dlinux -D__linux__ -Dunix -fPIC -MMD -MP -MF"src/fir.d" -MT"src/fir.o" -o "src/fir.o" "../src/fir.c"
+Finished building: ../src/fir.c
+ 
+Building file: ../src/fir_cppwrap.cpp
+Invoking: ARM v7 Linux g++ compiler
+arm-linux-gnueabihf-g++ -Wall -Os -c -fmessage-length=0 -MT"src/fir_cppwrap.o" -fomit-frame-pointer -pipe -fno-common -fno-builtin -DEMBED -Dlinux -D__linux__ -Dunix -fPIC -MMD -MP -MF"src/fir_cppwrap.d" -MT"src/fir_cppwrap.o" -o "src/fir_cppwrap.o" "../src/fir_cppwrap.cpp"
+Finished building: ../src/fir_cppwrap.cpp
+ 
+Building file: ../src/linuxi2c.cpp
+Invoking: ARM v7 Linux g++ compiler
+arm-linux-gnueabihf-g++ -Wall -Os -c -fmessage-length=0 -MT"src/linuxi2c.o" -fomit-frame-pointer -pipe -fno-common -fno-builtin -DEMBED -Dlinux -D__linux__ -Dunix -fPIC -MMD -MP -MF"src/linuxi2c.d" -MT"src/linuxi2c.o" -o "src/linuxi2c.o" "../src/linuxi2c.cpp"
+Finished building: ../src/linuxi2c.cpp
+ 
+Building file: ../src/linuxmisc.cpp
+Invoking: ARM v7 Linux g++ compiler
+arm-linux-gnueabihf-g++ -Wall -Os -c -fmessage-length=0 -MT"src/linuxmisc.o" -fomit-frame-pointer -pipe -fno-common -fno-builtin -DEMBED -Dlinux -D__linux__ -Dunix -fPIC -MMD -MP -MF"src/linuxmisc.d" -MT"src/linuxmisc.o" -o "src/linuxmisc.o" "../src/linuxmisc.cpp"
+Finished building: ../src/linuxmisc.cpp
+ 
+Building file: ../src/linuxmmap.cpp
+Invoking: ARM v7 Linux g++ compiler
+arm-linux-gnueabihf-g++ -Wall -Os -c -fmessage-length=0 -MT"src/linuxmmap.o" -fomit-frame-pointer -pipe -fno-common -fno-builtin -DEMBED -Dlinux -D__linux__ -Dunix -fPIC -MMD -MP -MF"src/linuxmmap.d" -MT"src/linuxmmap.o" -o "src/linuxmmap.o" "../src/linuxmmap.cpp"
+Finished building: ../src/linuxmmap.cpp
+ 
+Building file: ../src/main.cc
+Invoking: ARM v7 Linux g++ compiler
+arm-linux-gnueabihf-g++ -Wall -Os -c -fmessage-length=0 -MT"src/main.o" -fomit-frame-pointer -pipe -fno-common -fno-builtin -DEMBED -Dlinux -D__linux__ -Dunix -fPIC -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.cc"
+Finished building: ../src/main.cc
+ 
+Building target: myaudio.elf
+Invoking: ARM v7 Linux g++ linker
+arm-linux-gnueabihf-g++  -o "myaudio.elf"  ./src/audio.o ./src/audio_cppwrap.o ./src/fir.o ./src/fir_cppwrap.o ./src/linuxi2c.o ./src/linuxmisc.o ./src/linuxmmap.o ./src/main.o   -lpthread
+Finished building target: myaudio.elf
+ 
+Invoking: ARM v7 Linux Print Size
+arm-linux-gnueabihf-size myaudio.elf  |tee "myaudio.elf.size"
+   text	   data	    bss	    dec	    hex	filename
+  12256	    688	    252	  13196	   338c	myaudio.elf
+Finished building: myaudio.elf.size
+ 

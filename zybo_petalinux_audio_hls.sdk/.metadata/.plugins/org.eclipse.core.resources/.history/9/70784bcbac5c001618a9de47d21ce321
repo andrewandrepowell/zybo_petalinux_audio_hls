@@ -1,0 +1,23 @@
+/*
+ * fir.h
+ *
+ *  Created on: Aug 7, 2016
+ *      Author: andrewandrepowell2
+ */
+
+#ifndef FIR_H_
+#define FIR_H_
+
+#include <stdint.h>
+#include <string.h>
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* FIR_H_ */

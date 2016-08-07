@@ -1,0 +1,350 @@
+/*
+ * Empty C++ Application
+ */
+/* C++ Includes. */
+#include <iostream>
+#include <stdexcept>
+
+/* C / Linux Includes. */
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <unistd.h>
+#include <time.h>
+#include <math.h>
+#include <pthread.h>
+
+/* User-defined Includes. */
+#include "audio_cppwrap.h"
+#include "fir_cppwrap.h"
+#include "linuxi2c.h"
+#include "linuxmisc.h"
+#include "linuxmmap.h"
+
+/* Important definitions. */
+#define AUDIO_PHY_ADDR			( 0x43C00000 )
+#define AUDIO_PHY_SIZE			( 0x10000 )
+#define AUDIO_SAMPLE_RATE_HZ	( 48000 )
+#define AUDIO_SHIFT_VOL			( 2 )
+#define FIR_PHY_ADDR			( 0x43C10000 )
+#define FIR_PHY_SIZE			( 0x10000 )
+#define SAMPLES_TOTAL			( AUDIO_SAMPLE_RATE_HZ * 4 )
+#define SINE_SCALAR				( static_cast<double>( 1 << 20 ) )
+#define SINE_FREQ				( 261.63 )
+
+using namespace std;
+
+/* Define low-level behavior of platform-independent drivers. */
+
+class audio_driver : public audio_cppwrap
+{
+private:
+	void mem_access( audio_dir dir, uint32_t phy_addr, uint32_t* data, void* param );
+	void i2c_trans( audio_dir dir, uint8_t slave_addr, uint8_t* data, size_t len, void* param );
+	void i2c_delay( unsigned int ms, void* param );
+};
+
+class fir_driver : public fir_cppwrap
+{
+private:
+	void mem_access( fir_dir dir, uint32_t phy_addr, uint32_t* data, void* param );
+};
+
+/* The following are the primary operations of the application. */
+
+enum Command { C_IDLE, C_PLAY_SINEWAVE, C_CONNECT_MIC, C_RECORD, C_PLAY, C_TOGGLE_FIR_ENABLE };
+
+/* Significant functions. */
+
+void* inthread( void* param );
+inline int32_t convert_sample( uint32_t sample ) { return static_cast<int32_t>( sample << 8 ) >> 8; }
+
+/* Objects for communicating with SSM2603 / ADI core. */
+linuxi2c i2c_obj( 0 );
+linuxmmap audio_mm_obj( AUDIO_PHY_ADDR, AUDIO_PHY_SIZE );
+audio_driver audio_obj;
+
+/* Objects for communicating with HLS FIR core. */
+linuxmmap fir_mm_obj( FIR_PHY_ADDR, FIR_PHY_SIZE );
+fir_driver fir_obj;
+
+/* Objects for receiving input from user in a separate thread. */
+pthread_t inthread_obj;
+pthread_mutex_t inmutex_obj;
+Command input_command, curr_com, prev_com;
+
+/* Data related to running the actual audio application. */
+size_t curr_sample = 0;
+int32_t rec_samples[ SAMPLES_TOTAL ];
+bool fir_enable_flag = false;
+
+int main()
+{
+	cout << "Audio Fun Application has started!" << endl;
+
+	/* Initialize user-space drivers. */
+	audio_obj.start( 0, NULL );
+	fir_obj.start( 0, NULL );
+
+	/* Start thread for receiving user input. */
+	if ( pthread_mutex_init( &inmutex_obj, NULL ) > 0 )
+	{
+		throw runtime_error( "Mutex could not be created." );
+	}
+	if ( pthread_create( &inthread_obj, NULL, inthread, NULL ) > 0 )
+	{
+		throw runtime_error( "The input thread could not be created. ");
+	}
+
+	prev_com = curr_com = C_IDLE;
+	while ( true )
+	{
+		/* Get note from input. */
+		pthread_mutex_lock( &inmutex_obj );
+		curr_com = input_command;
+		pthread_mutex_unlock( &inmutex_obj );
+
+		/* Perform operation based on command. */
+		switch ( curr_com )
+		{
+		case C_IDLE:
+			{
+				/* No operation. */
+			}
+			break;
+		case C_PLAY_SINEWAVE:
+			{
+				/* Reset TX buffer in ADI core on start. */
+				if ( prev_com != curr_com )
+				{
+					audio_obj.write_mem_reset_tx();
+				}
+
+				/* Generate new value for sine wave. */
+				double val_0;
+				val_0 = SINE_SCALAR*sin( static_cast<double>( curr_sample++ ) * SINE_FREQ * ( 2.0 * M_PI / AUDIO_SAMPLE_RATE_HZ ) );
+
+				/* The following typecasts are necessary to ensure the
+				 floating-point value is converted into an unsigned
+				 integral value, without losing the negative data. */
+				int32_t val_1 = static_cast<int32_t>( val_0 );
+
+				/* Unfortunately, the core doesn't really do a good job of accounting for overflow. */
+				uint32_t val_2 = static_cast<uint32_t>( ( fir_enable_flag ) ? ( fir_obj.perform( val_1 >> 8 ) << 8 ) : val_1 );
+
+				/* Write note the TX buffer of ADI core. */
+				uint32_t samples[] = { val_2, val_2 };
+				audio_obj.write_mem_sample_lr( samples );
+			}
+			break;
+		case C_CONNECT_MIC:
+			{
+				/* Reset both TX and RX buffer in ADI core on start. */
+				if ( prev_com != curr_com )
+				{
+					audio_obj.write_mem_reset_txrx();
+				}
+
+				/* Grab left and right samples and output them. */
+				uint32_t* samples = audio_obj.read_mem_sample_lr();
+				int32_t sample = convert_sample( samples[ 0 ] );
+
+				sample = ( ( fir_enable_flag ) ?
+						( fir_obj.perform( sample >> 4 ) << ( 4+AUDIO_SHIFT_VOL ) ) :
+						( sample << AUDIO_SHIFT_VOL ) );
+
+				/* Output sample. */
+				samples[ 0 ] = static_cast<uint32_t> ( sample );
+				samples[ 1 ] = static_cast<uint32_t> ( sample );
+				audio_obj.write_mem_sample_lr( samples );
+
+//				/* Grab left and right samples and output them. */
+//				uint32_t* samples = audio_obj.read_mem_sample_lr();
+//				int32_t sample = convert_sample( samples[ 0 ] ) << AUDIO_SHIFT_VOL;
+//
+//				/* Output sample. */
+//				samples[ 0 ] = static_cast<uint32_t> ( sample );
+//				samples[ 1 ] = static_cast<uint32_t> ( sample );
+//				audio_obj.write_mem_sample_lr( samples );
+			}
+			break;
+		case C_RECORD:
+			{
+				/* Reset RX buffer in ADI core on start. */
+				if ( prev_com != curr_com )
+				{
+					curr_sample = 0;
+					audio_obj.write_mem_reset_rx();
+					cout << "Starting to record..." << endl;
+				}
+
+				/* Record the samples. */
+				if ( curr_sample < SAMPLES_TOTAL )
+				{
+					uint32_t* samples = audio_obj.read_mem_sample_lr();
+					rec_samples[ curr_sample ] =  convert_sample( samples[ 0 ] );
+					curr_sample++;
+				}
+
+				/* When recording is finished, go back to idle state. */
+				else
+				{
+					pthread_mutex_lock( &inmutex_obj );
+					input_command = C_IDLE;
+					pthread_mutex_unlock( &inmutex_obj );
+					cout << "Finished the recording..." << endl;
+				}
+			}
+			break;
+		case C_PLAY:
+			{
+				/* Reset TX buffer in ADI core on start. */
+				if ( prev_com != curr_com )
+				{
+					curr_sample = 0;
+					audio_obj.write_mem_reset_tx();
+					cout << "Starting to play recording..." << endl;
+				}
+
+				/* Record the samples. */
+				if ( curr_sample < SAMPLES_TOTAL )
+				{
+					int32_t sample = rec_samples[ curr_sample ] << AUDIO_SHIFT_VOL;
+					uint32_t val = static_cast<uint32_t>( sample );
+					uint32_t samples[] = { val, val };
+					audio_obj.write_mem_sample_lr( samples );
+					curr_sample++;
+				}
+
+				/* When recording is finished, go back to idle state. */
+				else
+				{
+					pthread_mutex_lock( &inmutex_obj );
+					input_command = C_IDLE;
+					pthread_mutex_unlock( &inmutex_obj );
+					cout << "Finished the playback..." << endl;
+				}
+			}
+			break;
+		case C_TOGGLE_FIR_ENABLE:
+			{
+				fir_enable_flag = !fir_enable_flag;
+				pthread_mutex_lock( &inmutex_obj );
+				input_command = C_IDLE;
+				pthread_mutex_unlock( &inmutex_obj );
+				cout << "Toggled HLS FIR enable flag to " << fir_enable_flag << "..." << endl;
+			}
+			break;
+		}
+
+		prev_com = curr_com;
+	}
+	return 0;
+}
+
+void* inthread( void* param )
+{
+	/* Let the user know what their possible options are! */
+	cout << "The following are the valid input..." << endl;
+	cout << "Keyboard | Operation\n"
+		"a        | Idle mode of operation\n"
+		"s        | Play sine wave\n"
+		"d        | Connect mic\n"
+		"f        | Record samples\n"
+		"g        | Play samples\n"
+		"h        | Toggle HLS FIR enable flag\n";
+
+	/* User shouldn't have to hit enter. */
+	linuxstdin_bufoff();
+
+	/* The input thread should run indefinitely. */
+	while ( true )
+	{
+		char input = cin.get();
+		pthread_mutex_lock( &inmutex_obj );
+		switch ( input )
+		{
+		case 'a': input_command = C_IDLE; break;
+		case 's': input_command = C_PLAY_SINEWAVE; break;
+		case 'd': input_command = C_CONNECT_MIC; break;
+		case 'f': input_command = C_RECORD; break;
+		case 'g': input_command = C_PLAY; break;
+		case 'h': input_command = C_TOGGLE_FIR_ENABLE; break;
+		default: break;
+		}
+		pthread_mutex_unlock( &inmutex_obj );
+	}
+	return NULL;
+}
+
+void audio_driver::mem_access( audio_dir dir, uint32_t phy_addr, uint32_t* data, void* param )
+{
+	( void ) param;
+	switch ( dir )
+	{
+		case audio_dir_WRITE:
+		{
+			audio_mm_obj.write_mem( static_cast<off_t>( phy_addr ), *data );
+		}
+		break;
+
+		case audio_dir_READ:
+		{
+			*data = audio_mm_obj.read_mem( static_cast<off_t>( phy_addr ) );
+		}
+		break;
+	}
+}
+
+void audio_driver::i2c_trans( audio_dir dir, uint8_t slave_addr, uint8_t* data, size_t len, void* param )
+{
+	( void ) param;
+	i2c_obj.set_slave( slave_addr );
+	switch ( dir )
+	{
+		case audio_dir_WRITE:
+		{
+			i2c_obj.write( data, len );
+		}
+		break;
+
+		case audio_dir_READ:
+		{
+			i2c_obj.read( data, len );
+		}
+		break;
+	}
+}
+
+void audio_driver::i2c_delay( unsigned int ms, void* param )
+{
+	( void ) param;
+	struct timespec ts;
+	ts.tv_sec = ms / 1000;
+	ts.tv_nsec = ( ms % 1000 ) * 1000000;
+	if ( nanosleep( &ts, NULL ) < 0 )
+	{
+		throw runtime_error( "Nanosleep failed." );
+	}
+
+}
+
+void fir_driver::mem_access( fir_dir dir, uint32_t phy_addr, uint32_t* data, void* param )
+{
+	( void ) param;
+	switch ( dir )
+	{
+		case fir_dir_WRITE:
+		{
+			fir_mm_obj.write_mem( static_cast<off_t>( phy_addr ), *data );
+		}
+		break;
+
+		case fir_dir_READ:
+		{
+			*data = fir_mm_obj.read_mem( static_cast<off_t>( phy_addr ) );
+		}
+		break;
+	}
+}

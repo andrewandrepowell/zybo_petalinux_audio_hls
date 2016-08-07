@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vivadoHLSLog:LogRoot xmlns:vivadoHLSLog="www.xilinx.com/vivadoHLSLog">
+  <errorLogs>
+    <logs>
+      <synLog/>
+      <simLog/>
+      <mgLog/>
+      <packageLog/>
+      <csimLog/>
+    </logs>
+  </errorLogs>
+  <warningLogs>
+    <logs>
+      <synLog>
+        <logs message="WARNING: [SYN 201-103] Legalizing function name 'fir_operator()' to 'fir_operator_s'." projectName="fir_hls_proj" solutionName="solution1" date="2016-08-07T01:22:16.400-0400" type="Warning"/>
+        <logs message="WARNING: [XFORM 203-631] Renaming function 'CFir&lt;int, int, int>::operator()' (fir_hls_proj/solution1/.tcls/cpp_FIR.h:116) into operator()." projectName="fir_hls_proj" solutionName="solution1" date="2016-08-07T01:22:16.390-0400" type="Warning"/>
+        <logs message="WARNING: [HLS 200-40] Skipped source file 'cpp_FIR.inc'. Source files must have extensions .c, .C, .cc, .cpp, .c++, .cp, or .cxx." projectName="fir_hls_proj" solutionName="solution1" date="2016-08-07T01:22:15.523-0400" type="Warning"/>
+      </synLog>
+      <simLog/>
+      <mgLog/>
+      <packageLog/>
+      <csimLog/>
+    </logs>
+  </warningLogs>
+</vivadoHLSLog:LogRoot>

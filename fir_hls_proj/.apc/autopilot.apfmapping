@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<autopilotfilemapping:AutoPilotFileMapping xmlns:autopilotfilemapping="www.autoesl.com/autopilotfilemapping">
+  <source>
+    <originFiles name="cpp_FIR.h" path="/opt/Xilinx/Projects/zybo_petalinux_audio_hls/fir_hls_proj/solution1/.tcls/cpp_FIR.h"/>
+    <originFiles name="cpp_FIR.inc" path="/opt/Xilinx/Projects/zybo_petalinux_audio_hls/fir_hls_proj/solution1/.tcls/cpp_FIR.inc"/>
+    <originFiles name="fire_core.cpp" path="/opt/Xilinx/Projects/zybo_petalinux_audio_hls/fir_hls_proj/solution1/.tcls/fire_core.cpp"/>
+  </source>
+  <testbench/>
+</autopilotfilemapping:AutoPilotFileMapping>

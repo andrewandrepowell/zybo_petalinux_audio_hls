@@ -1,0 +1,59 @@
+/*
+ * fir.h
+ *
+ *  Created on: Aug 7, 2016
+ *      Author: andrewandrepowell2
+ */
+
+#ifndef FIR_H_
+#define FIR_H_
+
+#include <stdint.h>
+#include <string.h>
+
+#define FIR_REG_CONTROL		( 0x00 )
+#define FIR_REG_GLOBAL_INT	( 0x04 )
+#define FIR_REG_ENABLE_INT	( 0x08 )
+#define FIR_REG_STATUS_INT	( 0x0C )
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+	typedef
+	enum { fir_dir_WRITE, fir_dir_READ }
+	fir_dir;
+
+	typedef void ( *fir_mem_access )( fir_dir dir, uint32_t phy_addr, uint32_t* data, void* param );
+
+	typedef
+	struct
+	{
+		uint32_t phy_base_addr;
+		fir_mem_access perform_mem_access;
+		void* param;
+	}
+	fir;
+
+	void fir_setup( fir* ptr, uint32_t phy_base_addr, fir_mem_access perform_mem_access, void* param );
+
+	static inline __attribute__ ( ( always_inline ) )
+	void fir_write_mem( fir* ptr, uint32_t phy_addr, uint32_t data )
+	{
+		ptr->perform_mem_access( fir_dir_WRITE, ( ptr->phy_base_addr + phy_addr ), &data, ptr->param );
+	}
+
+	static inline __attribute__ ( ( always_inline ) )
+	uint32_t fir_read_mem( fir* ptr, uint32_t phy_addr )
+	{
+		uint32_t data;
+		ptr->perform_mem_access( fir_dir_READ, ( ptr->phy_base_addr + phy_addr ), &data, ptr->param );
+		return data;
+	}
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* FIR_H_ */

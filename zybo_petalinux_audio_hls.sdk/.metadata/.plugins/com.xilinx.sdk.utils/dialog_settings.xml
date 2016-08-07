@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item value="/opt/Xilinx/Projects/zybo_petalinux_audio_hls/zybo_petalinux_audio_hls.sdk" key="bootgen_files_selection"/>
+	<item value="/opt/Xilinx/Projects/zybo_petalinux_audio_hls/zybo_petalinux_audio_hls.sdk" key="zynq_flash_files_selection"/>
+	<item value="/opt/Xilinx/Projects/zybo_petalinux_audio_hls/zybo_petalinux_audio_hls.sdk" key="last_stored_selection"/>
+</section>

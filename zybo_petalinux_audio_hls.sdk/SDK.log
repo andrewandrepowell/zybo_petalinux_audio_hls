@@ -1,0 +1,36 @@
+20:57:48 INFO  : Launching XSDB server: xsdb -n -interactive /opt/Xilinx/Projects/zybo_petalinux_audio_hls/zybo_petalinux_audio_hls.sdk/temp_xsdb_launch_script.tcl
+20:57:53 INFO  : XSDB server has started successfully.
+20:57:53 INFO  : Processing command line option -hwspec /opt/Xilinx/Projects/zybo_petalinux_audio_hls/zybo_petalinux_audio_hls.sdk/block_design_wrapper.hdf.
+01:34:05 INFO  : SDK has detected change in the last modified timestamps for source hardware specification file Source:1470548009000,  Project:1470531416000
+01:34:05 INFO  : Project block_design_wrapper_hw_platform_0's source hardware specification located at /opt/Xilinx/Projects/zybo_petalinux_audio_hls/zybo_petalinux_audio_hls.sdk/block_design_wrapper.hdf is now different from the local copy.
+		 The local copy will be replaced with the source specification and your workspace will be updated.
+01:34:07 INFO  : Copied contents of /opt/Xilinx/Projects/zybo_petalinux_audio_hls/zybo_petalinux_audio_hls.sdk/block_design_wrapper.hdf into /block_design_wrapper_hw_platform_0/system.hdf.
+01:34:13 INFO  : Synchronizing projects in the workspace with the hardware platform specification changes.
+01:34:13 INFO  : Clearing existing target manager status.
+01:34:15 INFO  : Workspace synchronized with the new hardware specification file. Cleaning dependent projects...
+01:34:15 WARN  : Linker script will not be updated automatically. Users need to update it manually.
+01:47:41 ERROR : Unexpected error while parsing XMD response ￿: com.google.gson.JsonSyntaxException: com.google.gson.stream.MalformedJsonException: invalid number or unquoted string near 
+10:11:36 INFO  : Launching XSDB server: xsdb -n -interactive /opt/Xilinx/Projects/zybo_petalinux_audio_hls/zybo_petalinux_audio_hls.sdk/temp_xsdb_launch_script.tcl
+10:11:37 INFO  : XSDB server has started successfully.
+10:11:38 INFO  : Processing command line option -hwspec /opt/Xilinx/Projects/zybo_petalinux_audio_hls/zybo_petalinux_audio_hls.sdk/block_design_wrapper.hdf.
+10:11:38 INFO  : Checking for hwspec changes in the project block_design_wrapper_hw_platform_0.
+12:54:09 INFO  : Invoking Bootgen: bootgen -image output.bif -arch zynq -o /opt/Xilinx/Projects/zybo_petalinux_audio_hls/zybo_petalinux_audio_hls.sdk/BOOT.bin
+12:54:09 INFO  : Creating new bif file /opt/Xilinx/Projects/zybo_petalinux_audio_hls/zybo_petalinux_audio_hls.sdk/output.bif
+12:54:09 INFO  : Bootgen command execution is done.
+13:06:49 INFO  : SDK has detected change in the last modified timestamps for source hardware specification file Source:1470589585000,  Project:1470548009000
+13:06:49 INFO  : Project block_design_wrapper_hw_platform_0's source hardware specification located at /opt/Xilinx/Projects/zybo_petalinux_audio_hls/zybo_petalinux_audio_hls.sdk/block_design_wrapper.hdf is now different from the local copy.
+		 The local copy will be replaced with the source specification and your workspace will be updated.
+13:06:50 INFO  : Copied contents of /opt/Xilinx/Projects/zybo_petalinux_audio_hls/zybo_petalinux_audio_hls.sdk/block_design_wrapper.hdf into /block_design_wrapper_hw_platform_0/system.hdf.
+13:06:57 INFO  : Synchronizing projects in the workspace with the hardware platform specification changes.
+13:06:57 INFO  : Clearing existing target manager status.
+13:06:59 INFO  : Workspace synchronized with the new hardware specification file. Cleaning dependent projects...
+13:06:59 WARN  : Linker script will not be updated automatically. Users need to update it manually.
+13:47:59 INFO  : Invoking Bootgen: bootgen -image output.bif -arch zynq -o /opt/Xilinx/Projects/zybo_petalinux_audio_hls/zybo_petalinux_audio_hls.sdk/BOOT.bin -w on
+13:47:59 INFO  : Bootgen command execution is done.
+14:49:55 INFO  : Invoking Bootgen: bootgen -image output.bif -arch zynq -o /opt/Xilinx/Projects/zybo_petalinux_audio_hls/zybo_petalinux_audio_hls.sdk/BOOT.bin -w on
+14:49:56 INFO  : Bootgen command execution is done.
+15:03:13 ERROR : Unexpected error while parsing XMD response ￿: com.google.gson.JsonSyntaxException: com.google.gson.stream.MalformedJsonException: invalid number or unquoted string near 
+18:26:51 INFO  : Launching XSDB server: xsdb -n -interactive /opt/Xilinx/Projects/zybo_petalinux_audio_hls/zybo_petalinux_audio_hls.sdk/temp_xsdb_launch_script.tcl
+18:26:52 INFO  : XSDB server has started successfully.
+18:26:52 INFO  : Processing command line option -hwspec /opt/Xilinx/Projects/zybo_petalinux_audio_hls/zybo_petalinux_audio_hls.sdk/block_design_wrapper.hdf.
+18:26:52 INFO  : Checking for hwspec changes in the project block_design_wrapper_hw_platform_0.

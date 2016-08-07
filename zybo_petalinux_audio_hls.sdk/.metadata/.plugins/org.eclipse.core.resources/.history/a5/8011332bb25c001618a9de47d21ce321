@@ -1,0 +1,23 @@
+/*
+ * fir_cppwrap.h
+ *
+ *  Created on: Aug 7, 2016
+ *      Author: andrewandrepowell2
+ */
+
+#ifndef FIR_CPPWRAP_H_
+#define FIR_CPPWRAP_H_
+
+#include "fir.h"
+
+class fir_cppwrap
+{
+public:
+	fir_cppwrap() { }
+	void start( uint32_t phy_base_addr, void* param )
+private:
+	fir obj;
+	void* param;
+};
+
+#endif /* FIR_CPPWRAP_H_ */

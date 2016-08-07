@@ -1,0 +1,153 @@
+
+
+================================================================
+== Vivado HLS Report for 'fir'
+================================================================
+* Date:           Sun Aug  7 01:22:16 2016
+
+* Version:        2016.2 (Build 1577090 on Thu Jun 02 16:59:10 MDT 2016)
+* Project:        fir_hls_proj
+* Solution:       solution1
+* Product family: zynq
+* Target device:  xc7z010clg400-1
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |  10.00|      8.52|        1.25|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+-----+-----+-----+---------+
+    |  Latency  |  Interval | Pipeline|
+    | min | max | min | max |   Type  |
+    +-----+-----+-----+-----+---------+
+    |  163|  163|  164|  164|   none  |
+    +-----+-----+-----+-----+---------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        N/A
+
+============================================================
++ Verbose Summary: Synthesis Manager
+============================================================
+InlineROM: 1
+ExposeGlobal: 0
+============================================================
++ Verbose Summary: CDFG Model
+============================================================
+IsTopModel: 1
+ResetActiveHigh: 1
+IsCombinational: 0
+IsDatapathOnly: 0
+HasWiredReturn: 1
+HasMFsm: 0
+HasVarLatency: 1
+IsPipeline: 0
+IsRtlPipelined: 0
+IsInstanceOverlapped: 0
+IsDontTouch: 0
+HasImplIP: 0
+IsGatedGlobalClock: 0
+
+
+============================================================
++ Verbose Summary: Schedule
+============================================================
+* Number of FSM states: 3
+* Pipeline: 0
+* Dataflow Pipeline: 0
+
+* FSM state transitions: 
+1 --> 
+	2  / true
+2 --> 
+	3  / true
+3 --> 
+* FSM state operations: 
+
+ <State 1>: 1.00ns
+ST_1: input_val_read [1/1] 1.00ns
+codeRepl:6  %input_val_read = call i32 @_ssdm_op_Read.s_axilite.i32P(i32* %input_val) nounwind
+
+ST_1: tmp [2/2] 0.00ns
+codeRepl:7  %tmp = call fastcc i32 @"fir_operator()"(i32 %input_val_read)
+
+
+ <State 2>: 1.00ns
+ST_2: tmp [1/2] 0.00ns
+codeRepl:7  %tmp = call fastcc i32 @"fir_operator()"(i32 %input_val_read)
+
+ST_2: tmp_3 [1/1] 0.00ns
+codeRepl:8  %tmp_3 = call i16 @_ssdm_op_PartSelect.i16.i32.i32.i32(i32 %tmp, i32 16, i32 31)
+
+ST_2: tmp_1 [1/1] 0.00ns
+codeRepl:9  %tmp_1 = sext i16 %tmp_3 to i32
+
+ST_2: stg_9 [2/2] 1.00ns
+codeRepl:10  call void @_ssdm_op_Write.s_axilite.i32P(i32* %output_val, i32 %tmp_1) nounwind
+
+
+ <State 3>: 1.00ns
+ST_3: stg_10 [1/1] 0.00ns
+codeRepl:0  call void (...)* @_ssdm_op_SpecBitsMap(i32* %input_val) nounwind, !map !26
+
+ST_3: stg_11 [1/1] 0.00ns
+codeRepl:1  call void (...)* @_ssdm_op_SpecBitsMap(i32* %output_val) nounwind, !map !30
+
+ST_3: stg_12 [1/1] 0.00ns
+codeRepl:2  call void (...)* @_ssdm_op_SpecTopModule([4 x i8]* @fir_str) nounwind
+
+ST_3: stg_13 [1/1] 0.00ns
+codeRepl:3  call void (...)* @_ssdm_op_SpecInterface(i32* %input_val, [10 x i8]* @p_str, i32 0, i32 0, i32 0, i32 0, [6 x i8]* @p_str1, [1 x i8]* @p_str2, [1 x i8]* @p_str2, i32 0, i32 0, i32 0, i32 0, [1 x i8]* @p_str2) nounwind
+
+ST_3: stg_14 [1/1] 0.00ns
+codeRepl:4  call void (...)* @_ssdm_op_SpecInterface(i32* %output_val, [10 x i8]* @p_str, i32 1, i32 1, i32 0, i32 0, [6 x i8]* @p_str1, [1 x i8]* @p_str2, [1 x i8]* @p_str2, i32 0, i32 0, i32 0, i32 0, [1 x i8]* @p_str2) nounwind
+
+ST_3: stg_15 [1/1] 0.00ns
+codeRepl:5  call void (...)* @_ssdm_op_SpecInterface(i32 0, [10 x i8]* @p_str, i32 0, i32 0, i32 0, i32 0, [6 x i8]* @p_str1, [1 x i8]* @p_str2, [1 x i8]* @p_str2, i32 0, i32 0, i32 0, i32 0, [1 x i8]* @p_str2) nounwind
+
+ST_3: stg_16 [1/2] 1.00ns
+codeRepl:10  call void @_ssdm_op_Write.s_axilite.i32P(i32* %output_val, i32 %tmp_1) nounwind
+
+ST_3: stg_17 [1/1] 0.00ns
+codeRepl:11  ret void
+
+
+
+============================================================
++ Verbose Summary: Timing violations
+============================================================
+Target clock period: 10ns, clock uncertainty: 1.25ns.
+
+ No timing violations. 
+
+
+============================================================
++ Verbose Summary: Binding
+============================================================
+N/A
+* FSMD analyzer results:
+  - Output states:
+ - Input state : 
+  - Chain level:
+	State 1
+	State 2
+	State 3
+
+
+============================================================
++ Verbose Summary: Datapath Resource usage 
+============================================================
+N/A

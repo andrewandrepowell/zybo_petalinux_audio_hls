@@ -1,0 +1,93 @@
+/*
+ * fir.h
+ *
+ *  Created on: Aug 7, 2016
+ *      Author: andrewandrepowell2
+ */
+
+#ifndef FIR_H_
+#define FIR_H_
+
+#include <stdint.h>
+#include <string.h>
+
+/* Address Info taken from HLS-generated VHDL file
+-- ------------------------Address Info-------------------
+-- 0x00 : Control signals
+--        bit 0  - ap_start (Read/Write/COH)
+--        bit 1  - ap_done (Read/COR)
+--        bit 2  - ap_idle (Read)
+--        bit 3  - ap_ready (Read)
+--        bit 7  - auto_restart (Read/Write)
+--        others - reserved
+-- 0x04 : Global Interrupt Enable Register
+--        bit 0  - Global Interrupt Enable (Read/Write)
+--        others - reserved
+-- 0x08 : IP Interrupt Enable Register (Read/Write)
+--        bit 0  - Channel 0 (ap_done)
+--        bit 1  - Channel 1 (ap_ready)
+--        others - reserved
+-- 0x0c : IP Interrupt Status Register (Read/TOW)
+--        bit 0  - Channel 0 (ap_done)
+--        bit 1  - Channel 1 (ap_ready)
+--        others - reserved
+-- 0x10 : Data signal of input_val
+--        bit 31~0 - input_val[31:0] (Read/Write)
+-- 0x14 : reserved
+-- 0x18 : Data signal of output_val
+--        bit 31~0 - output_val[31:0] (Read)
+-- 0x1c : Control signal of output_val
+--        bit 0  - output_val_ap_vld (Read/COR)
+--        others - reserved
+-- (SC = Self Clear, COR = Clear on Read, TOW = Toggle on Write, COH = Clear on Handshake)
+ */
+
+#define FIR_REG_CONTROL			( 0x00 )
+#define FIR_REG_GLOBAL_INT		( 0x04 )
+#define FIR_REG_ENABLE_INT		( 0x08 )
+#define FIR_REG_STATUS_INT		( 0x0C )
+#define FIR_REG_INPUT_VAL		( 0x10 )
+#define FIR_REG_OUTPUT_VAL		( 0x18 )
+#define FIR_REG_OUTPUT_CNTRL	( 0x1C )
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+	typedef
+	enum { fir_dir_WRITE, fir_dir_READ }
+	fir_dir;
+
+	typedef void ( *fir_mem_access )( fir_dir dir, uint32_t phy_addr, uint32_t* data, void* param );
+
+	typedef
+	struct
+	{
+		uint32_t phy_base_addr;
+		fir_mem_access perform_mem_access;
+		void* param;
+	}
+	fir;
+
+	void fir_setup( fir* ptr, uint32_t phy_base_addr, fir_mem_access perform_mem_access, void* param );
+
+	static inline __attribute__ ( ( always_inline ) )
+	void fir_write_mem( fir* ptr, uint32_t phy_addr, uint32_t data )
+	{
+		ptr->perform_mem_access( fir_dir_WRITE, ( ptr->phy_base_addr + phy_addr ), &data, ptr->param );
+	}
+
+	static inline __attribute__ ( ( always_inline ) )
+	uint32_t fir_read_mem( fir* ptr, uint32_t phy_addr )
+	{
+		uint32_t data;
+		ptr->perform_mem_access( fir_dir_READ, ( ptr->phy_base_addr + phy_addr ), &data, ptr->param );
+		return data;
+	}
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* FIR_H_ */

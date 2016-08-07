@@ -1,0 +1,16 @@
+/*
+ * fir.c
+ *
+ *  Created on: Aug 7, 2016
+ *      Author: andrewandrepowell2
+ */
+#include "fir.h"
+
+void fir_setup( fir* ptr, uint32_t phy_base_addr, fir_mem_access perform_mem_access, void* param )
+{
+	ptr->phy_base_addr = phy_base_addr;
+	ptr->perform_mem_access = perform_mem_access;
+	ptr->param = param;
+
+	fir_write_mem( ptr, FIR_REG_CONTROL, (1 << 7 ) );
+}
